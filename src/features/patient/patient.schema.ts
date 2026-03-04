@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PATIENT_ERRORS } from "../../constants/messages";
+import { COMMON_ERROR, PATIENT_ERRORS } from "../../constants/messages";
 
 
 export const patientSchema = z.object({
@@ -34,5 +34,42 @@ export const patientLoginSchema = z.object({
       message: PATIENT_ERRORS.DOB_FUTURE,
     }),
 });
+
+// Medical History 
+
+export const medicalHistorySchema = z.object({
+  diseaseId: z
+    .number({ message: PATIENT_ERRORS.DISEASE_ID_REQUIRE })
+    .int()
+    .positive(),
+
+  patientId: z
+    .number({ message: PATIENT_ERRORS.PATIENT_ID_REQUIRE })
+    .int()
+    .positive(),
+
+  description: z
+    .string()
+    .trim()
+    .max(1500, {message: COMMON_ERROR.DESCRIPTION_TOO_LONG })
+    .optional(),
+
+  startDate: z
+    .coerce
+    .date({ message: COMMON_ERROR.STARTDATE_REQUIRE }),
+
+  endDate: z
+    .coerce
+    .date()
+    .optional()
+}).refine(
+  (data) => !data.endDate || data.endDate >= data.startDate,
+  {
+    message: COMMON_ERROR.ENDDATE_BEFORE_START,
+    path: ["endDate"]
+  }
+);
+
 export type PatientLoginInput = z.infer<typeof patientLoginSchema>;
 export type PatientInput = z.infer<typeof patientSchema>;
+export type MedicalHistoryCreate = z.infer<typeof medicalHistorySchema>

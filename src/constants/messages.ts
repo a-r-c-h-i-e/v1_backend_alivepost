@@ -8,10 +8,19 @@ export const PATIENT_ERRORS = {
   DOB_FUTURE: "Date of birth cannot be in the future",
   BLOODGROUP_INVALID: "Invalid blood group",
   GENDER_INVALID: "Invalid gender value",
-  MOBILE_INVALID: "Mobile number must be a valid 10-digit Indian number"
+  MOBILE_INVALID: "Mobile number must be a valid 10-digit Indian number",
+  DISEASE_ID_REQUIRE: "Disease ID is required",
+  PATIENT_ID_REQUIRE:"Patient ID is required",
+  INVALID_PATIENT: "Invalid Patient"
 };
 export const error = {
   INTERNAL_SERVER_ERROR: "Internal Server Error",
   DATABASE_ERROR: "Database error",
   INVALID_CREDENTIALS: "Invalid credentials",
+}
+
+export const COMMON_ERROR= {
+  STARTDATE_REQUIRE: "Start date is required",
+  DESCRIPTION_TOO_LONG: "Description too long",
+  ENDDATE_BEFORE_START: "End date cannot be before start date"
 }
