@@ -1,4 +1,4 @@
-import { prisma } from "../../config/prisma";
+import  prisma  from "../../config/prisma";
 import type { PatientInput } from "./patient.schema";
 
 export async function CreatePatient(data: PatientInput) {
