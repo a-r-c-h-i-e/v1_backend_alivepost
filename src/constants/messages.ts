@@ -20,6 +20,7 @@ export const error = {
 }
 
 export const COMMON_ERROR= {
+  INVALID_DISEASE: "Invalid Disease",
   STARTDATE_REQUIRE: "Start date is required",
   DESCRIPTION_TOO_LONG: "Description too long",
   ENDDATE_BEFORE_START: "End date cannot be before start date"
