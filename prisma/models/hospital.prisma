@@ -14,7 +14,7 @@ model Doctor {
     id         Int      @id @default(autoincrement())
     name       String
     hospitalId Int
-    hospital   Hospital @relation(fields: [hospitalId], references: [id])
+    hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade )
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
 }
