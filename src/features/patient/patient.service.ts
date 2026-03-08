@@ -34,12 +34,44 @@ export async function LoginPatient(data: PatientLoginInput) {
   if (patient.dateOfBirth.toISOString() !== data.dateOfBirth.toISOString()) {
     throw new AppError(error.INVALID_CREDENTIALS, 401);
   }
-  const token = jwt.sign({ id: patient.id ,role: "Patient" }, process.env.JWT_SECRET!, {
-    expiresIn: "14d",
-  });
+  const token = jwt.sign(
+    { id: patient.id, role: "Patient" },
+    process.env.JWT_SECRET!,
+    {
+      expiresIn: "30d",
+    },
+  );
   return { patient, token };
 }
 
+//Delete Patient service
+
+export async function DeletePatientService(id: number | undefined) {
+  if(!id){
+    throw new AppError(COMMON_ERROR.ID_NOT_FOUND,404)
+  }
+  try {
+    const patient = await prisma.patient.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return patient;
+  } catch (error: any) {
+    // Record not found
+    if (error.code === "P2025") {
+      throw new AppError(PATIENT_ERRORS.INVALID_PATIENT, 404);
+    }
+
+    // Foreign key constraint
+    if (error.code === "P2003") {
+      throw new AppError(COMMON_ERROR.FOREIGN_KEY_CONSTRAINT, 400);
+    }
+
+    throw error; // unknown error
+  }
+}
 //Medical history create for patient
 export async function MedicalHistoryCreateService(data: MedicalHistoryCreate) {
   try {

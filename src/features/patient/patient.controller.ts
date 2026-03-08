@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type NextFunction } from "express";
 import {
   medicalHistorySchema,
   patientLoginSchema,
@@ -9,10 +9,12 @@ import {
 } from "./patient.schema";
 import {
   CreatePatient,
+  DeletePatientService,
   LoginPatient,
   MedicalHistoryCreateService,
 } from "./patient.service";
 import { success } from "zod";
+import { AuthUser } from "../../middleware/Auth";
 const patientRouter = express.Router();
 
 patientRouter.post("/create", async (req, res, next) => {
@@ -42,6 +44,20 @@ patientRouter.post("/login", async (req, res, next) => {
   }
 });
 
+//Patient Delete
+patientRouter.delete('/delete',AuthUser, async (req,res , next)=>{
+  try{
+    const id = req.user?.id
+    const data = await DeletePatientService(id)
+    console.log(data)
+    res.status(200).json({
+      success:true,
+      data:data
+    })
+  }catch(error){
+    next(error)
+  }
+})
 //Medical History create
 patientRouter.post("/medicalhistorycreate", async (req, res, next) => {
   const data: MedicalHistoryCreate = req.body;

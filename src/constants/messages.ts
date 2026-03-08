@@ -23,5 +23,7 @@ export const COMMON_ERROR= {
   INVALID_DISEASE: "Invalid Disease",
   STARTDATE_REQUIRE: "Start date is required",
   DESCRIPTION_TOO_LONG: "Description too long",
-  ENDDATE_BEFORE_START: "End date cannot be before start date"
+  ENDDATE_BEFORE_START: "End date cannot be before start date",
+  FOREIGN_KEY_CONSTRAINT: "Foreign Key Contraint Error",
+  ID_NOT_FOUND: "ID not found / Passed"
 }

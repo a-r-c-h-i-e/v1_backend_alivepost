@@ -1,5 +1,16 @@
+export {};
 
-interface AuthUserType{
-    id: string,
-    role: 'Patient' | "Doctor" | "Hospital" |"Admin"  
+declare global {
+
+  interface AuthUserType {
+    id: number;
+    role: "Patient" | "Doctor" | "Hospital" | "Admin";
+  }
+
+  namespace Express {
+    interface Request {
+      user?: AuthUserType;
+    }
+  }
+
 }

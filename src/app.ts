@@ -1,9 +1,11 @@
 import express from "express"
 import mainRouter from "./mainRouter"
+import cookieParser from "cookie-parser";
 import { globalErrorHandler } from "./middleware/globalErrorHandler"
 const app = express()
 const PORT = Number(process.env.PORT) || 3000
 app.use(express.json())
+app.use(cookieParser())
 app.use('/api/v1/', mainRouter)
 app.get('/health', (req, res) => {
     res.status(200).json({
