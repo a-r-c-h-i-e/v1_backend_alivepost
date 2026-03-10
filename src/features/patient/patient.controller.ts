@@ -1,6 +1,7 @@
 import express, { type NextFunction } from "express";
 import {
   medicalHistorySchema,
+  PatientConditionSchema,
   patientLoginSchema,
   patientSchema,
   type MedicalHistoryCreate,
@@ -12,8 +13,8 @@ import {
   DeletePatientService,
   LoginPatient,
   MedicalHistoryCreateService,
+  PatientConditionCreate,
 } from "./patient.service";
-import { success } from "zod";
 import { AuthUser } from "../../middleware/Auth";
 const patientRouter = express.Router();
 
@@ -44,7 +45,7 @@ patientRouter.post("/login", async (req, res, next) => {
   }
 });
 
-//Patient Delete
+//Patient Delete  --- this can be security issue fix this
 patientRouter.delete('/delete',AuthUser, async (req,res , next)=>{
   try{
     const id = req.user?.id
@@ -72,5 +73,54 @@ patientRouter.post("/medicalhistorycreate", async (req, res, next) => {
     next(error);
   }
 });
+
+//Create Patient Condition 
+patientRouter.post('/condition',AuthUser,async (req, res, next) => {
+    try {
+      const data = req.body;
+      const user = req.user;
+
+      // Validate input data
+      const safeData = PatientConditionSchema.parse(data);
+
+      // Determine patient ID based on user role
+      let patientId: number | null = null;
+      if (user?.role === "Patient") {
+        patientId = user.id;
+      } else if (user?.role === "Hospital" || user?.role === "Doctor") {
+        patientId = safeData.patientId;
+      } else {
+        return res.status(403).json({
+          success: false,
+          message: "Unauthorized: Invalid user role",
+        });
+      }
+
+      // Ensure patientId is valid
+      if (!patientId) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid patient ID",
+        });
+      }
+
+      // Create patient condition
+      const patientCondition = await PatientConditionCreate({
+        id: patientId,
+        data: safeData, // Pass safeData as `data` instead of `safeData`
+      });
+
+      // Success response
+      res.status(201).json({
+        success: true,
+        data: patientCondition,
+      });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 
 export default patientRouter;

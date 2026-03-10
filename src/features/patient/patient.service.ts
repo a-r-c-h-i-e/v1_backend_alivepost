@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import prisma from "../../config/prisma";
 import type {
   MedicalHistoryCreate,
+  PatientConditionInput,
   PatientInput,
   PatientLoginInput,
 } from "./patient.schema";
@@ -98,5 +99,44 @@ export async function MedicalHistoryCreateService(data: MedicalHistoryCreate) {
     }
 
     throw error;
+  }
+}
+export async function PatientConditionCreate({id , data}:{id:number , data : PatientConditionInput}){
+  try {
+    
+    const patientCondition = await prisma.patientCondition.create({
+      data:{
+        patientId: id,
+        diseaseId: data.diseaseId,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        status: data.status
+      }
+    })
+    return patientCondition
+  } catch (error) {
+     if (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error
+  ) {
+
+    const prismaError = error as { code?: string; meta?: any };
+
+    if (prismaError.code === "P2003") {
+      const field = prismaError.meta?.field_name;
+
+      if (field?.includes("patientId")) {
+        throw new AppError(PATIENT_ERRORS.INVALID_PATIENT, 404);
+      }
+
+      if (field?.includes("diseaseId")) {
+        throw new AppError(COMMON_ERROR.INVALID_DISEASE, 404);
+      }
+    }
+
+  }
+
+  throw error;
   }
 }

@@ -70,6 +70,32 @@ export const medicalHistorySchema = z.object({
   }
 );
 
+//PatientConditionSchema 
+export const PatientConditionSchema = z
+  .object({
+    patientId: z
+      .number()
+      .int()
+      .positive({ message: PATIENT_ERRORS.INVALID_PATIENT }),
+
+    diseaseId: z
+      .number()
+      .int()
+      .positive({ message: COMMON_ERROR.INVALID_DISEASE }),
+
+    status: z.enum(["STABLE", "CRITICAL", "RECOVERED"]),
+
+    startDate: z.coerce.date({
+      message: COMMON_ERROR.STARTDATE_REQUIRE,
+    }),
+
+    endDate: z.coerce.date().optional(),
+  })
+  .refine((data) => !data.endDate || data.endDate >= data.startDate, {
+    message: COMMON_ERROR.ENDDATE_BEFORE_START,
+    path: ["endDate"],
+  });
 export type PatientLoginInput = z.infer<typeof patientLoginSchema>;
 export type PatientInput = z.infer<typeof patientSchema>;
 export type MedicalHistoryCreate = z.infer<typeof medicalHistorySchema>
+export type PatientConditionInput = z.infer<typeof PatientConditionSchema>
