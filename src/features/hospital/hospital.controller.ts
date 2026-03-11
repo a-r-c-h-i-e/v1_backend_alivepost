@@ -1,7 +1,7 @@
 import express from "express";
 import { AuthUser } from "../../middleware/Auth";
 import { HospitalLoginSchema, HospitalSchema } from "./hospital.schema";
-import { HospitalCreate, HospitalLogin } from "./hospital.service";
+import { HospitalCreate, HospitalLogin, SearchHospital } from "./hospital.service";
 import HashPassword from "../../utils/hashUtils";
 const hospitalRouter = express.Router();
 //for now i have removed the admin logic as it require to have admin
@@ -40,6 +40,19 @@ hospitalRouter.post('/login', async (req , res , next)=>{
       data: hospital.safeData
     })
   }catch(error){
+    next(error)
+  }
+})
+
+hospitalRouter.get('/search', async (req , res , next)=>{
+  try {
+    const query = req.query.name as string
+    const hospital = await SearchHospital(query)
+    res.status(200).json({
+      success: true,
+      data: hospital
+    })
+  } catch (error) {
     next(error)
   }
 })

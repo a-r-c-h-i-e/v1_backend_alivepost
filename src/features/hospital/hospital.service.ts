@@ -53,3 +53,23 @@ export async function HospitalLogin(data: HospitalLogin) {
 
   return {safeData, token}
 }
+
+//hospital search or debouncing 
+export async function SearchHospital(name:string){
+  const hospital = await prisma.hospital.findMany({
+    where:{
+      name:{
+        contains:name,
+        mode: "insensitive"
+      }
+    },
+   select:{
+    id: true, 
+    name: true,
+    helplineNumber: true,
+    address: true,
+    userId: true,
+   }
+  })
+  return hospital
+}
