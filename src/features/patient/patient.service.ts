@@ -149,3 +149,24 @@ export async function PatientConditionCreate(data: PatientConditionInput) {
     throw error;
   }
 }
+export async function PatientConditionGet({
+  user,
+  safeId,
+}: {
+  user: { id: number; role: string };
+  safeId: number;
+}) {
+  const where: any = { id: safeId };
+
+  if (user.role === "Patient") where.patientId = user.id;
+  if (user.role === "Hospital") where.hospitalId = user.id;
+  if (user.role === "Doctor") where.doctorId = user.id;
+
+  const condition = await prisma.patientCondition.findMany({ where });
+
+  if (!condition) {
+    throw new AppError("Condition not found or unauthorized", 404);
+  }
+
+  return condition;
+}

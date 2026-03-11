@@ -14,9 +14,10 @@ import {
   LoginPatient,
   MedicalHistoryCreateService,
   PatientConditionCreate,
+  PatientConditionGet,
 } from "./patient.service";
 import { AuthUser } from "../../middleware/Auth";
-import { COMMON_ERROR, PATIENT_ERRORS } from "../../constants/messages";
+import { AppError } from "../../utils/AppError";
 const patientRouter = express.Router();
 
 patientRouter.post("/create", async (req, res, next) => {
@@ -97,6 +98,26 @@ patientRouter.post("/condition", AuthUser, async (req, res, next) => {
     });
 
   
+  } catch (error) {
+    next(error);
+  }
+});
+
+patientRouter.get("/condition/:id", AuthUser, async (req, res, next) => {
+  try {
+    const user = req.user!;
+    const id = Number(req.params.id);
+
+    if (!id) {
+      throw new AppError("Invalid condition id", 400);
+    }
+
+    const condition = await PatientConditionGet({ user, safeId: id });
+
+    res.json({
+      success: true,
+      data: condition,
+    });
   } catch (error) {
     next(error);
   }
