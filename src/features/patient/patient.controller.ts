@@ -1,5 +1,6 @@
 import express, { type NextFunction } from "express";
 import {
+  AssignMedicineSchema,
   medicalHistorySchema,
   PatientConditionSchema,
   patientLoginSchema,
@@ -9,6 +10,7 @@ import {
   type PatientLoginInput,
 } from "./patient.schema";
 import {
+  AssignMedicine,
   CreatePatient,
   DeletePatientService,
   LoginPatient,
@@ -18,6 +20,7 @@ import {
 } from "./patient.service";
 import { AuthUser } from "../../middleware/Auth";
 import { AppError } from "../../utils/AppError";
+import { COMMON_ERROR } from "../../constants/messages";
 const patientRouter = express.Router();
 
 patientRouter.post("/create", async (req, res, next) => {
@@ -123,4 +126,23 @@ patientRouter.get("/condition/:id", AuthUser, async (req, res, next) => {
   }
 });
 
+patientRouter.post("/condition/medicine", AuthUser, async (req, res, next) => {
+  try {
+    const user = req.user
+    const safeData = AssignMedicineSchema.parse(req.body)
+
+    if (user?.role !== "Hospital") {
+      throw new AppError(COMMON_ERROR.INVALID_ROLE, 403)
+    }
+
+    const result = await AssignMedicine(safeData, user)
+
+    res.status(200).json({
+      success: true,
+      data: result
+    })
+  } catch (error) {
+    next(error)
+  }
+})
 export default patientRouter;
